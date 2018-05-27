@@ -4,11 +4,10 @@ This project aims to provide a the player with a minimal list of items and quant
 
 Sample Program Input:
 
-![input](https://i.imgur.com/rpXWlr0.png)
+![input](https://i.imgur.com/ZZEmLs2.png)
 
-with 670 more rows.
+
 
 Sample Program Output:
 
-![output1](https://i.imgur.com/OqEECS9.png)
-![output2](https://i.imgur.com/W3Pc9b4.png)
+![output](https://i.imgur.com/Yk59f02.png)
