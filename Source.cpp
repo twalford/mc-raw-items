@@ -17,38 +17,62 @@ using std::ifstream;
 #pragma endregion
 
 // Populates an list of nodes with name data.
-void PopulateAllItems(vector<Tree::ItemNode*> &list) {
+void PopulateAllItemNames(vector<Tree::ItemNode*> &list) {
 	string val;
 	ifstream myfile("HHITEMS.csv");
 
-	if (myfile.is_open()) {
+	if (!myfile.is_open()) {
+		cout << "Error opening file in PopulateAllItemNames()" << endl;
+	}
+
+	while (myfile.good()) {
+
 		int colCount = 0;
 		string sName = "";
 
 		// Extract data between each comma and save it according to
-		// the colCount. (We only want the 2nd column - the name).
+		// the colCount. (We only want the 2nd column for now - the name).
+		
+		getline(myfile, val, ','); //TYPE
+		getline(myfile, sName, ','); //NAME
+		getline(myfile, val, ','); //ING1
+		getline(myfile, val, ','); //QTY1
+		getline(myfile, val, ','); //ING2
+		getline(myfile, val, ','); //QTY2
+		getline(myfile, val, ','); //ING3
+		getline(myfile, val, ','); //QTY3
+		getline(myfile, val, ','); //ING4
+		getline(myfile, val, ','); //QTY4
+		getline(myfile, val, ','); //ING5
+		getline(myfile, val, ','); //QTY5
+		getline(myfile, val, ','); //CHILDREN
+		getline(myfile, val, ','); //MAKES
+		getline(myfile, val, '\n'); //REQUIRED
+
+		/*
 		while (getline(myfile, val, ',')) {
+			cout << "val = " << val << endl;
 			switch (colCount) {
 				case 1: sName = val; 
 					break;
 				default:
 					break;
 			}
-
-			// 12 Items in each line, at the end we write data
+			*/
+			// 15 Items in each line, at the end we write data
 			// to the node and push it into the list. Reset the count.
-			if (colCount == 12) {
+			//if (colCount == 14) {
 				Tree::ItemNode* n = new Tree::ItemNode();
 				list.push_back(n);
 				n->name = sName;
-				colCount = 0;
-			}
-			else
-				colCount++;
-		}
+				//colCount = 0;
+			//}
+			//else
+				//colCount++;
+		//}
 		// Close the file when finished.
-		myfile.close();
 	}
+	myfile.close();
 
 }
 
@@ -113,7 +137,8 @@ Tree::ItemNode* FindNodeByName(string s, vector<Tree::ItemNode*> &list) {
 	return NULL;
 }
 
-int main() {	
+int main() {
+
 	// Any errors will be added to this string;
 	string errors = "ERRORS:\n";
 
@@ -122,105 +147,106 @@ int main() {
 	allItems.clear();
 
 	// Add all the Names only to the list.
-	PopulateAllItems(allItems);
+	PopulateAllItemNames(allItems);
 
 	// Setup for file reading.
 	string val;
 	ifstream myfile("HHITEMS.csv");
-	if (myfile.is_open())
+	if (!myfile.is_open()) {
+		cout << "Error: UNABLE TO OPEN FILE in MAIN" << endl;
+	}
+	
+	// Initialise variables to hold the data.
+	string sType = "";
+	string sName = "";
+	string sIngA = "";
+	string sIngB = "";
+	string sIngC = "";
+	string sIngD = "";
+	string sIngE = "";
+	int iIngAqty = 0;
+	int iIngBqty = 0;
+	int iIngCqty = 0;
+	int iIngDqty = 0;
+	int iIngEqty = 0;
+	int iChildren = 0;
+	int iMakes = 0;
+	int iRequired = 0;
+
+	while (myfile.good())
 	{
-		// Have a count to track the commas/column.
-		int colCount = 0;
-
-		// Initialise variables to hold the data.
-		string sType	= "";
-		string sName	= "";
-		string sIngA	= "";
-		string sIngB	= "";
-		string sIngC	= "";
-		string sIngD	= "";
-		int iIngAqty	= 0;
-		int iIngBqty	= 0;
-		int iIngCqty	= 0;
-		int iIngDqty	= 0;
-		int iChildren	= 0;
-		int iMakes		= 0;
-		int iRequired	= 0;
-
 		// Start reading the file by strings seperated by commas.
-		while (getline(myfile, val, ','))
-		{
-			// The colCount tells us which data is being read in so we
-			// can set it to the right variable.
-			switch (colCount)
-			{
-			case 0: sType		= "-"; break; // Ignoring TYPE for now (newline issue).
-			case 1: sName		= val; break;
-			case 2: sIngA		= val; break;
-			case 3: iIngAqty	= (val != "-") ? stoi(val) : 0; break;
-			case 4: sIngB		= val; break;
-			case 5: iIngBqty	= (val != "-") ? stoi(val) : 0; break;
-			case 6: sIngC		= val; break;
-			case 7: iIngCqty	= (val != "-") ? stoi(val) : 0; break;
-			case 8: sIngD		= val; break;
-			case 9: iIngDqty	= (val != "-") ? stoi(val) : 0; break;
-			case 10: iChildren  = (val != "-") ? stoi(val) : 0; break;
-			case 11: iMakes		= (val != "-") ? stoi(val) : 1; break;
-			case 12: iRequired  = (val != "-") ? stoi(val) : 0; break;
-			default:
-				break;
-			}
-			
-			// At the end of each line, store the data into its corret node.
-			if (colCount == 12)
-			{
-				// Search the list for the correct node by name and
-				// assign all the data to it.
-				Tree::ItemNode* n = FindNodeByName(sName, allItems);
-				
-				if (n != NULL)
-				{
-					n->type = sType;
+		getline(myfile, sType, ','); //TYPE
+		getline(myfile, sName, ','); //NAME
 
-					//if the first ingredient is empty, then so should the others.
-					if (sIngA != "-") {
-						n->pIngredients[0] = FindNodeByName(sIngA, allItems);
-						if (sIngB != "-") {
-							n->pIngredients[1] = FindNodeByName(sIngB, allItems);
-							if (sIngC != "-") {
-								n->pIngredients[2] = FindNodeByName(sIngC, allItems);
-								if (sIngD != "-") {
-									n->pIngredients[3] = FindNodeByName(sIngD, allItems);
-								}
+		getline(myfile, sIngA, ','); //ING1
+		getline(myfile, val, ','); //QTY1
+		iIngAqty = (val != "-") ? stoi(val) : 0;
+
+		getline(myfile, sIngB, ','); //ING2
+		getline(myfile, val, ','); //QTY2
+		iIngBqty = (val != "-") ? stoi(val) : 0;
+
+		getline(myfile, sIngC, ','); //ING3
+		getline(myfile, val, ','); //QTY3
+		iIngCqty = (val != "-") ? stoi(val) : 0;
+
+		getline(myfile, sIngD, ','); //ING4
+		getline(myfile, val, ','); //QTY4
+		iIngDqty = (val != "-") ? stoi(val) : 0;
+
+		getline(myfile, sIngE, ','); //ING5
+		getline(myfile, val, ','); //QTY5
+		iIngEqty = (val != "-") ? stoi(val) : 0;
+
+		getline(myfile, val, ','); //CHILDREN
+		iChildren = stoi(val);
+		getline(myfile, val, ','); //MAKES
+		iMakes = stoi(val);
+		getline(myfile, val, '\n'); //REQUIRED
+		iRequired = stoi(val);
+
+		// Search the list for the correct node by name and
+		// assign all the data to it.
+		Tree::ItemNode* n = FindNodeByName(sName, allItems);
+				
+		if (n != NULL)
+		{
+			n->type = sType;
+
+			//if the first ingredient is empty, then so should the others.
+			if (sIngA != "-") {
+				n->pIngredients[0] = FindNodeByName(sIngA, allItems);
+				if (sIngB != "-") {
+					n->pIngredients[1] = FindNodeByName(sIngB, allItems);
+					if (sIngC != "-") {
+						n->pIngredients[2] = FindNodeByName(sIngC, allItems);
+						if (sIngD != "-") {
+							n->pIngredients[3] = FindNodeByName(sIngD, allItems);
+							if (sIngE != "-") {
+								n->pIngredients[4] = FindNodeByName(sIngE, allItems);
 							}
 						}
 					}
-					n->ingredientCounts[0] = iIngAqty;
-					n->ingredientCounts[1] = iIngBqty;
-					n->ingredientCounts[2] = iIngCqty;
-					n->ingredientCounts[3] = iIngDqty;
-					n->numDependables = iChildren;
-					n->makesQty = iMakes;
-					n->numRequired = iRequired;
 				}
-				// Add to the error string if a null node was found.
-				else {
-					errors += "Error: NULL node (FindNodeByName).\n";
-				}
-				colCount = 0;
 			}
-			else
-				colCount++;
+			n->ingredientCounts[0] = iIngAqty;
+			n->ingredientCounts[1] = iIngBqty;
+			n->ingredientCounts[2] = iIngCqty;
+			n->ingredientCounts[3] = iIngDqty;
+			n->ingredientCounts[4] = iIngEqty;
+			n->numDependables = iChildren;
+			n->makesQty = iMakes;
+			n->numRequired = iRequired;
 		}
-		// Close the file when finished.
-		myfile.close();
+		// Add to the error string if a null node was found.
+		else {
+			errors += "Error: NULL node (FindNodeByName).\n";
+		}
 	}
-	else
-	{
-		// Report error if file cannot be opened.
-		cout << "Error: UNABLE TO OPEN FILE\n";
-	}
-
+	// Close the file when finished.
+	myfile.close();
+	
 	// Create a list for all the uncalcuated items, in case of a endless loop.
 	vector<Tree::ItemNode*> uncalcList;
 	uncalcList.clear();
@@ -249,7 +275,7 @@ int main() {
 					n->pIngredients[0]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
 					n->pIngredients[0]->numDependables--;
 					if (n->pIngredients[1] != NULL) {
-						n->pIngredients[1]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
+						n->pIngredients[1]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[1]);
 						n->pIngredients[1]->numDependables--;
 						if (n->pIngredients[2] != NULL) {
 							n->pIngredients[2]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[2]);
@@ -257,6 +283,10 @@ int main() {
 							if (n->pIngredients[3] != NULL) {
 								n->pIngredients[3]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[3]);
 								n->pIngredients[3]->numDependables--;
+								if (n->pIngredients[4] != NULL) {
+									n->pIngredients[4]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[4]);
+									n->pIngredients[4]->numDependables--;
+								}
 							}
 						}
 					}
@@ -279,7 +309,6 @@ int main() {
 			break;
 		}
 		prevCount = count;
-
 	}
 
 	// Create a list to hold all the raw level items.
@@ -301,9 +330,80 @@ int main() {
 	cout << "=========================" << endl;
 	cout << errors;
 	cout << "=========================" << endl;
-	cout << endl << "FINISHED" << endl;
-	char input = '0';
+	cout << "FINISHED" << endl << endl;
+
+	// Let the user enter an item to view its usages.
+	cout << "Enter item name to view breakdown or 'q' to quit\n>";
+	string input = "0";
 	cin >> input;
+	while (input != "q") {
+
+		bool itemFound = true;
+		// Search for matching ingredients.
+		// calculate the requirements again....
+		//    This might be unnecessary. Does it always equal numRequired - 1 ?
+		vector<Tree::ItemNode*> tempList;
+		tempList.clear();
+		int tempCount = 0;
+		int tempReq = 0;
+		for each (Tree::ItemNode* n in allItems) {
+			if (n != NULL) {
+				if (n->pIngredients[0] != NULL) {
+					if (n->pIngredients[0]->name == input) {
+						tempList.push_back(n);
+						tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
+					}
+					else if (n->pIngredients[1] != NULL) {
+						if (n->pIngredients[1]->name == input) {
+							tempList.push_back(n);
+							tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[1]);
+						}
+						else if (n->pIngredients[2] != NULL) {
+							if (n->pIngredients[2]->name == input) {
+								tempList.push_back(n);
+								tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[2]);
+							}
+							else if (n->pIngredients[3] != NULL) {
+								if (n->pIngredients[3]->name == input) {
+									tempList.push_back(n);
+									tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[3]);
+								}
+								else if (n->pIngredients[4] != NULL) {
+									if (n->pIngredients[4]->name == input) {
+										tempList.push_back(n);
+										tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[4]);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// Check if the item exists.
+			n = FindNodeByName(input, allItems);
+			if (n == NULL) {
+				cout << "CANNOT FIND '" << input << endl;
+				itemFound = false;
+				break;
+			}
+			else
+				// If it exists, grab the total required value.
+				tempReq = n->numRequired;
+		}
+
+		// Display the list if found.
+		if (itemFound) {
+			cout << "CRAFTING RECIPES WITH '" << input << "'" << endl;
+			DisplayList(tempList);
+			// tempCount is the total in the list.
+			// tempReq is n->numRequired
+			cout << "TOTAL '" << input << "':" << tempCount << " (" << tempReq << ")" << endl;
+		}
+		
+		cout << endl << ">";
+		cin >> input;
+	}
 
 	return 0;
 }

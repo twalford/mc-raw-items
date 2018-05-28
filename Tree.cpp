@@ -19,10 +19,12 @@ Tree::ItemNode* Tree::CreateNode(string type, string name) {
 	n->pIngredients[1] = NULL;
 	n->pIngredients[2] = NULL;
 	n->pIngredients[3] = NULL;
+	n->pIngredients[4] = NULL;
 	n->ingredientCounts[0] = 0;
 	n->ingredientCounts[1] = 0;
 	n->ingredientCounts[2] = 0;
 	n->ingredientCounts[3] = 0;
+	n->ingredientCounts[4] = 0;
 	n->calculated = false;
 
 	return n;

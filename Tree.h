@@ -5,8 +5,8 @@ public:
 	struct ItemNode {
 		std::string type;
 		std::string name;
-		ItemNode* pIngredients[4];
-		int ingredientCounts[4];
+		ItemNode* pIngredients[5];
+		int ingredientCounts[5];
 		int numDependables;
 		int makesQty;
 		int numRequired;
