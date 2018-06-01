@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
 
 #include "Tree.h"
 #pragma region using ...
@@ -11,6 +12,7 @@ using std::cin;
 using std::endl;
 using std::setw;
 using std::left;
+using std::reverse;
 using std::vector;
 using std::string;
 using std::ifstream;
@@ -49,38 +51,20 @@ void PopulateAllItemNames(vector<Tree::ItemNode*> &list) {
 		getline(myfile, val, ','); //MAKES
 		getline(myfile, val, '\n'); //REQUIRED
 
-		/*
-		while (getline(myfile, val, ',')) {
-			cout << "val = " << val << endl;
-			switch (colCount) {
-				case 1: sName = val; 
-					break;
-				default:
-					break;
-			}
-			*/
-			// 15 Items in each line, at the end we write data
-			// to the node and push it into the list. Reset the count.
-			//if (colCount == 14) {
-				Tree::ItemNode* n = new Tree::ItemNode();
-				list.push_back(n);
-				n->name = sName;
-				//colCount = 0;
-			//}
-			//else
-				//colCount++;
-		//}
-		// Close the file when finished.
+		Tree::ItemNode* n = new Tree::ItemNode();
+		list.push_back(n);
+		n->name = sName;
 	}
+	// Close the file when finished.
 	myfile.close();
-
 }
 
 // Reports a list of nodes with all data.
 void DisplayList(vector<Tree::ItemNode*> &list) {
+	int counter = 0;
 	//Display the whole list
-	cout << "T |Item Name                    |Ingredient A                 |Qty|Ingredient B                 |Qty|Ingredient C                 |Qty|D  |M  |R  |C" << endl;
-	cout << "==+=============================+=============================+===+=============================+===+=============================+===+===+===+===+=" << endl;
+	cout << "T |Item Name                    |Ingredient A                 |Qty|Ingredient B                 |Qty|Ingredient C                 |Qty|D  |M  |R   |C" << endl;
+	cout << "==+=============================+=============================+===+=============================+===+=============================+===+===+===+====+=" << endl;
 	for each (Tree::ItemNode* n in list) {
 		if (n == NULL) return;
 
@@ -108,23 +92,27 @@ void DisplayList(vector<Tree::ItemNode*> &list) {
 			cout << "-                            |-  |-                            |-  |-                            |-  |";
 		}
 		// Children, MakesQty, and numRequired.
-		cout << setw(3) << n->numDependables << "|" << setw(3) << n->makesQty << "|" << setw(3) << n->numRequired << "|";
+		cout << setw(3) << n->numDependables << "|" << setw(3) << n->makesQty << "|" << setw(4) << n->numRequired << "|";
 		cout << setw(3) << ((n->calculated) ? "c" : "u") << endl;
 
-		//delete n;
+		counter++;
+		if (counter == 9) {
+			counter = 0;
+			cout << "==+=============================+=============================+===+=============================+===+=============================+===+===+===+====+=" << endl;
+		}
 	}
 }
 
 // Reports a list of nodes with only Type, Name, and NumRequired.
 void DisplayListNoIngredients(vector<Tree::ItemNode*> &list) {
 	//Display the whole list
-	cout << "T |Item Name                    |R  " << endl;
-	cout << "==+=============================+===" << endl;
+	cout << "T |Item Name                    |R   " << endl;
+	cout << "==+=============================+====" << endl;
 	for each (Tree::ItemNode* n in list) {
 		if (n == NULL) return;
 
 		// Type, name, and numRequired.
-		cout << left << setw(2) << n->type << "|" << setw(29) << n->name << "|" << setw(3) << n->numRequired << endl;
+		cout << left << setw(2) << n->type << "|" << setw(29) << n->name << "|" << setw(4) << n->numRequired << endl;
 	}
 }
 
@@ -139,22 +127,16 @@ Tree::ItemNode* FindNodeByName(string s, vector<Tree::ItemNode*> &list) {
 
 int main() {
 
-	// Any errors will be added to this string;
-	string errors = "ERRORS:\n";
+	string errors = "ERRORS:\n"; // Errors added to this string.
 
-	// Create a list for our items;
-	vector<Tree::ItemNode*> allItems;
-	allItems.clear();
-
-	// Add all the Names only to the list.
-	PopulateAllItemNames(allItems);
-
-	// Setup for file reading.
-	string val;
-	ifstream myfile("HHITEMS.csv");
-	if (!myfile.is_open()) {
-		cout << "Error: UNABLE TO OPEN FILE in MAIN" << endl;
-	}
+	vector<Tree::ItemNode*> allItemsList; // Original list of our items.
+	vector<Tree::ItemNode*> progList; // For crafting progression.
+	vector<Tree::ItemNode*> uncalcList; // In case of endless loop.
+	vector<Tree::ItemNode*> minimalList; // Hold all the minimal level items.
+	allItemsList.clear();
+	progList.clear();
+	uncalcList.clear();
+	minimalList.clear();
 	
 	// Initialise variables to hold the data.
 	string sType = "";
@@ -173,8 +155,19 @@ int main() {
 	int iMakes = 0;
 	int iRequired = 0;
 
+	// Add all the Names only to the list.
+	PopulateAllItemNames(allItemsList);
+
+	// Setup for file reading.	
+	ifstream myfile("HHITEMS.csv");
+	if (!myfile.is_open()) {
+		cout << "Error: UNABLE TO OPEN FILE in MAIN" << endl;
+	}
+
 	while (myfile.good())
 	{
+		string val; // Temp string for file reading.
+
 		// Start reading the file by strings seperated by commas.
 		getline(myfile, sType, ','); //TYPE
 		getline(myfile, sName, ','); //NAME
@@ -208,7 +201,7 @@ int main() {
 
 		// Search the list for the correct node by name and
 		// assign all the data to it.
-		Tree::ItemNode* n = FindNodeByName(sName, allItems);
+		Tree::ItemNode* n = FindNodeByName(sName, allItemsList);
 				
 		if (n != NULL)
 		{
@@ -216,15 +209,15 @@ int main() {
 
 			//if the first ingredient is empty, then so should the others.
 			if (sIngA != "-") {
-				n->pIngredients[0] = FindNodeByName(sIngA, allItems);
+				n->pIngredients[0] = FindNodeByName(sIngA, allItemsList);
 				if (sIngB != "-") {
-					n->pIngredients[1] = FindNodeByName(sIngB, allItems);
+					n->pIngredients[1] = FindNodeByName(sIngB, allItemsList);
 					if (sIngC != "-") {
-						n->pIngredients[2] = FindNodeByName(sIngC, allItems);
+						n->pIngredients[2] = FindNodeByName(sIngC, allItemsList);
 						if (sIngD != "-") {
-							n->pIngredients[3] = FindNodeByName(sIngD, allItems);
+							n->pIngredients[3] = FindNodeByName(sIngD, allItemsList);
 							if (sIngE != "-") {
-								n->pIngredients[4] = FindNodeByName(sIngE, allItems);
+								n->pIngredients[4] = FindNodeByName(sIngE, allItemsList);
 							}
 						}
 					}
@@ -235,9 +228,10 @@ int main() {
 			n->ingredientCounts[2] = iIngCqty;
 			n->ingredientCounts[3] = iIngDqty;
 			n->ingredientCounts[4] = iIngEqty;
-			n->numDependables = iChildren;
+			n->numDependables = iChildren; // This to stay unchanged.
 			n->makesQty = iMakes;
 			n->numRequired = iRequired;
+			n->numWorkingDependables = iChildren; // This to be used in calculation.
 		}
 		// Add to the error string if a null node was found.
 		else {
@@ -246,17 +240,13 @@ int main() {
 	}
 	// Close the file when finished.
 	myfile.close();
-	
-	// Create a list for all the uncalcuated items, in case of a endless loop.
-	vector<Tree::ItemNode*> uncalcList;
-	uncalcList.clear();
 
 	// Number of uncalculated items.
-	int count = allItems.size();
+	int count = allItemsList.size();
 	int prevCount = count + 1;
 
 	// Display all the items with their initial values.
-	DisplayList(allItems);
+	DisplayList(allItemsList);
 	cout << "uncounted:" << count << endl << endl;
 
 ////// doing the thing
@@ -266,26 +256,26 @@ int main() {
 	while (count > 0) {
 
 		// Go through the whole list.
-		for each (Tree::ItemNode* n in allItems) {
+		for each (Tree::ItemNode* n in allItemsList) {
 
 			// Find one that has is not used any uncalculated items. (has zero dependables)
-			if (n->numDependables == 0 && n->calculated == false) {
+			if (n->numWorkingDependables == 0 && n->calculated == false) {
 				if (n->pIngredients[0] != NULL) {
 					// required += roundup(R / M) * QTY 
 					n->pIngredients[0]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
-					n->pIngredients[0]->numDependables--;
+					n->pIngredients[0]->numWorkingDependables--;
 					if (n->pIngredients[1] != NULL) {
 						n->pIngredients[1]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[1]);
-						n->pIngredients[1]->numDependables--;
+						n->pIngredients[1]->numWorkingDependables--;
 						if (n->pIngredients[2] != NULL) {
 							n->pIngredients[2]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[2]);
-							n->pIngredients[2]->numDependables--;
+							n->pIngredients[2]->numWorkingDependables--;
 							if (n->pIngredients[3] != NULL) {
 								n->pIngredients[3]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[3]);
-								n->pIngredients[3]->numDependables--;
+								n->pIngredients[3]->numWorkingDependables--;
 								if (n->pIngredients[4] != NULL) {
 									n->pIngredients[4]->numRequired += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[4]);
-									n->pIngredients[4]->numDependables--;
+									n->pIngredients[4]->numWorkingDependables--;
 								}
 							}
 						}
@@ -293,12 +283,13 @@ int main() {
 				}
 				n->calculated = true;
 				count--;
+				progList.push_back(n);
 			}
 		}
 
 		// Check for a endless loop.
 		if (count == prevCount) {
-			for each (Tree::ItemNode* n in allItems) {
+			for each (Tree::ItemNode* n in allItemsList) {
 				if (n->calculated == false) {
 					uncalcList.push_back(n);
 				}
@@ -311,20 +302,16 @@ int main() {
 		prevCount = count;
 	}
 
-	// Create a list to hold all the raw level items.
-	vector<Tree::ItemNode*> rawList;
-	rawList.clear();
-
-	// Populate the raw list with items that dont have a crafting recipe.
-	for each (Tree::ItemNode* n in allItems) {
+	// Populate the minimal list with items that dont have a crafting recipe.
+	for each (Tree::ItemNode* n in allItemsList) {
 		if (n->pIngredients[0] == NULL) {
-			rawList.push_back(n);
+			minimalList.push_back(n);
 		}
 	}
 
-	// Display the raw list.
-	cout << endl << "RAW LIST" << endl;
-	DisplayListNoIngredients(rawList);
+	// Display the minimal list.
+	cout << endl << "MINIMAL LIST" << endl;
+	DisplayListNoIngredients(minimalList);
 	
 	// Program finished, wait for input.
 	cout << "=========================" << endl;
@@ -338,67 +325,75 @@ int main() {
 	cin >> input;
 	while (input != "q") {
 
-		bool itemFound = true;
-		// Search for matching ingredients.
-		// calculate the requirements again....
-		//    This might be unnecessary. Does it always equal numRequired - 1 ?
-		vector<Tree::ItemNode*> tempList;
-		tempList.clear();
-		int tempCount = 0;
-		int tempReq = 0;
-		for each (Tree::ItemNode* n in allItems) {
-			if (n != NULL) {
-				if (n->pIngredients[0] != NULL) {
-					if (n->pIngredients[0]->name == input) {
-						tempList.push_back(n);
-						tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
-					}
-					else if (n->pIngredients[1] != NULL) {
-						if (n->pIngredients[1]->name == input) {
+		// Display a "helpful" item crafting progression list.
+		if (input == "prog") {
+			reverse(progList.begin(), progList.end());
+			DisplayList(progList);
+		}
+		else {
+
+			bool itemFound = true;
+			// Search for matching ingredients.
+			// calculate the requirements again....
+			//    This might be unnecessary. Does it always equal numRequired - 1 ?
+			vector<Tree::ItemNode*> tempList;
+			tempList.clear();
+			int tempCount = 0;
+			int tempReq = 0;
+			for each (Tree::ItemNode* n in allItemsList) {
+				if (n != NULL) {
+					if (n->pIngredients[0] != NULL) {
+						if (n->pIngredients[0]->name == input) {
 							tempList.push_back(n);
-							tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[1]);
+							tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[0]);
 						}
-						else if (n->pIngredients[2] != NULL) {
-							if (n->pIngredients[2]->name == input) {
+						else if (n->pIngredients[1] != NULL) {
+							if (n->pIngredients[1]->name == input) {
 								tempList.push_back(n);
-								tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[2]);
+								tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[1]);
 							}
-							else if (n->pIngredients[3] != NULL) {
-								if (n->pIngredients[3]->name == input) {
+							else if (n->pIngredients[2] != NULL) {
+								if (n->pIngredients[2]->name == input) {
 									tempList.push_back(n);
-									tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[3]);
+									tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[2]);
 								}
-								else if (n->pIngredients[4] != NULL) {
-									if (n->pIngredients[4]->name == input) {
+								else if (n->pIngredients[3] != NULL) {
+									if (n->pIngredients[3]->name == input) {
 										tempList.push_back(n);
-										tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[4]);
+										tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[3]);
+									}
+									else if (n->pIngredients[4] != NULL) {
+										if (n->pIngredients[4]->name == input) {
+											tempList.push_back(n);
+											tempCount += (ceil((float)n->numRequired / n->makesQty) * n->ingredientCounts[4]);
+										}
 									}
 								}
 							}
 						}
 					}
 				}
+
+				// Check if the item exists.
+				n = FindNodeByName(input, allItemsList);
+				if (n == NULL) {
+					cout << "CANNOT FIND '" << input << endl;
+					itemFound = false;
+					break;
+				}
+				else
+					// If it exists, grab the total required value.
+					tempReq = n->numRequired;
 			}
 
-			// Check if the item exists.
-			n = FindNodeByName(input, allItems);
-			if (n == NULL) {
-				cout << "CANNOT FIND '" << input << endl;
-				itemFound = false;
-				break;
+			// Display the list if found.
+			if (itemFound) {
+				cout << "CRAFTING RECIPES WITH '" << input << "'" << endl;
+				DisplayList(tempList);
+				// tempCount is the total in the list.
+				// tempReq is n->numRequired
+				cout << "TOTAL '" << input << "':" << tempCount << " (" << tempReq << ")" << endl;
 			}
-			else
-				// If it exists, grab the total required value.
-				tempReq = n->numRequired;
-		}
-
-		// Display the list if found.
-		if (itemFound) {
-			cout << "CRAFTING RECIPES WITH '" << input << "'" << endl;
-			DisplayList(tempList);
-			// tempCount is the total in the list.
-			// tempReq is n->numRequired
-			cout << "TOTAL '" << input << "':" << tempCount << " (" << tempReq << ")" << endl;
 		}
 		
 		cout << endl << ">";
