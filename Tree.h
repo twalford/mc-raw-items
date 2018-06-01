@@ -11,6 +11,7 @@ public:
 		int makesQty;
 		int numRequired;
 		bool calculated;
+		int numWorkingDependables;
 	};
 	
 	Tree();
