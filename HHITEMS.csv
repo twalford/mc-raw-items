@@ -513,7 +513,7 @@ M,PRISMARINE_SHARD,-,-,-,-,-,-,-,-,-,-,2,1,1
 -,PRISMARINE_SLAB,PRISMARINE,3,-,-,-,-,-,-,-,-,0,1,1
 -,PRISMARINE_STAIRS,PRISMARINE,6,-,-,-,-,-,-,-,-,0,1,1
 O,PUFFERFISH,-,-,-,-,-,-,-,-,-,-,0,1,1
--,PUFFERFISH_BUCKET,BUCKET,-,-,-,-,-,-,-,-,-,0,1,1
+-,PUFFERFISH_BUCKET,BUCKET,1,-,-,-,-,-,-,-,-,0,1,1
 R,PUMPKIN,-,-,-,-,-,-,-,-,-,-,3,1,1
 -,PUMPKIN_PIE,PUMPKIN,1,SUGAR,1,EGG,1,-,-,-,-,0,1,1
 -,PUMPKIN_SEEDS,PUMPKIN,1,-,-,-,-,-,-,-,-,0,1,1
@@ -559,7 +559,7 @@ R,RED_SAND,-,-,-,-,-,-,-,-,-,-,1,1,1
 -,RED_SHULKER_BOX,SHULKER_BOX,1,ROSE_RED,1,-,-,-,-,-,-,0,1,1
 -,RED_STAINED_GLASS,GLASS,8,ROSE_RED,1,-,-,-,-,-,-,1,8,1
 -,RED_STAINED_GLASS_PANE,RED_STAINED_GLASS,6,-,-,-,-,-,-,-,-,0,1,1
--,RED_TERRACOTTA,TERRACOTTA,8,ROSE_RED,-,-,-,-,-,-,-,1,8,1
+-,RED_TERRACOTTA,TERRACOTTA,8,ROSE_RED,1,-,-,-,-,-,-,1,8,1
 R,RED_TULIP,-,-,-,-,-,-,-,-,-,-,0,1,1
 H,RED_WOOL,-,-,-,-,-,-,-,-,-,-,3,1,1
 R,REDSTONE,-,-,-,-,-,-,-,-,-,-,13,1,1
