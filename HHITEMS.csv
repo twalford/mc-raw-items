@@ -66,9 +66,9 @@ R,BLUE_ORCHID,-,-,-,-,-,-,-,-,-,-,0,1,1
 -,BLUE_STAINED_GLASS_PANE,BLUE_STAINED_GLASS,6,-,-,-,-,-,-,-,-,0,1,1
 -,BLUE_TERRACOTTA,TERRACOTTA,8,LAPIS_LAZULI,1,-,-,-,-,-,-,1,8,1
 H,BLUE_WOOL,-,-,-,-,-,-,-,-,-,-,3,1,1
-M,BONE,-,-,-,-,-,-,-,-,-,-,2,1,1
--,BONE_BLOCK,BONE,9,-,-,-,-,-,-,-,-,0,1,1
--,BONE_MEAL,BONE,1,-,-,-,-,-,-,-,-,8,3,1
+M,BONE,-,-,-,-,-,-,-,-,-,-,1,1,1
+-,BONE_BLOCK,BONE_MEAL,9,-,-,-,-,-,-,-,-,0,1,1
+-,BONE_MEAL,BONE,1,-,-,-,-,-,-,-,-,9,3,1
 -,BOOK,PAPER,3,LEATHER,1,-,-,-,-,-,-,3,1,1
 -,BOOKSHELF,BOOK,3,OAK_PLANKS,6,-,-,-,-,-,-,0,1,1
 -,BOW,STICK,3,STRING,3,-,-,-,-,-,-,1,1,1
@@ -279,9 +279,9 @@ R,GRAVEL,-,-,-,-,-,-,-,-,-,-,17,1,1
 -,GRAY_CARPET,GRAY_WOOL,2,-,-,-,-,-,-,-,-,0,1,1
 -,GRAY_CONCRETE,GRAY_CONCRETE_POWDER,1,-,-,-,-,-,-,-,-,0,1,1
 -,GRAY_CONCRETE_POWDER,GRAVEL,4,SAND,4,GRAY_DYE,1,-,-,-,-,1,8,1
--,GRAY_DYE,INK_SAC,1,BONE_MEAL,1,-,-,-,-,-,-,3,2,1
+-,GRAY_DYE,INK_SAC,1,BONE_MEAL,1,-,-,-,-,-,-,4,2,1
 F,GRAY_GLAZED_TERRACOTTA,GRAY_TERRACOTTA,1,-,-,-,-,-,-,-,-,0,1,1
--,GRAY_SHULKER_BOX,SHULKER_BOX,1,-,-,-,-,-,-,-,-,0,1,1
+-,GRAY_SHULKER_BOX,SHULKER_BOX,1,GRAY_DYE,1,-,-,-,-,-,-,0,1,1
 -,GRAY_STAINED_GLASS,GLASS,8,GRAY_DYE,1,-,-,-,-,-,-,1,8,1
 -,GRAY_STAINED_GLASS_PANE,GRAY_STAINED_GLASS,6,-,-,-,-,-,-,-,-,0,1,1
 -,GRAY_TERRACOTTA,TERRACOTTA,8,GRAY_DYE,1,-,-,-,-,-,-,1,8,1
@@ -534,9 +534,9 @@ E,PURPUR_PILLAR,PURPUR_SLAB,2,-,-,-,-,-,-,-,-,0,1,1
 E,PURPUR_SLAB,PURPUR_BLOCK,3,-,-,-,-,-,-,-,-,1,6,1
 E,PURPUR_STAIRS,PURPUR_BLOCK,6,-,-,-,-,-,-,-,-,0,1,1
 N,QUARTZ,NETHER_QUARTZ_ORE,1,-,-,-,-,-,-,-,-,4,1,1
-N,QUARTZ_BLOCK,QUARTZ,4,-,-,-,-,-,-,-,-,2,1,1
-N,QUARTZ_PILLAR,QUARTZ_SLAB,2,-,-,-,-,-,-,-,-,0,1,1
-N,QUARTZ_SLAB,QUARTZ_BLOCK,3,-,-,-,-,-,-,-,-,2,6,1
+N,QUARTZ_BLOCK,QUARTZ,4,-,-,-,-,-,-,-,-,3,1,1
+N,QUARTZ_PILLAR,QUARTZ_BLOCK,2,-,-,-,-,-,-,-,-,0,1,1
+N,QUARTZ_SLAB,QUARTZ_BLOCK,3,-,-,-,-,-,-,-,-,1,6,1
 N,QUARTZ_STAIRS,QUARTZ_BLOCK,6,-,-,-,-,-,-,-,-,0,1,1
 R,RABBIT,-,-,-,-,-,-,-,-,-,-,1,1,1
 M,RABBIT_FOOT,-,-,-,-,-,-,-,-,-,-,0,1,1
