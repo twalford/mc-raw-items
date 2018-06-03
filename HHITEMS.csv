@@ -54,7 +54,7 @@ H,BLACK_WOOL,-,-,-,-,-,-,-,-,-,-,3,1,1
 -,BLAZE_POWDER,BLAZE_ROD,1,-,-,-,-,-,-,-,-,2,2,1
 N,BLAZE_ROD,-,-,-,-,-,-,-,-,-,-,3,1,1
 -,BLUE_BANNER,BLUE_WOOL,6,STICK,1,-,-,-,-,-,-,0,1,1
--,BLUE_BED,BLUE_WOOL,3,OAK_PLANKS,1,-,-,-,-,-,-,0,1,1
+-,BLUE_BED,BLUE_WOOL,3,OAK_PLANKS,3,-,-,-,-,-,-,0,1,1
 -,BLUE_CARPET,BLUE_WOOL,2,-,-,-,-,-,-,-,-,0,1,1
 -,BLUE_CONCRETE,BLUE_CONCRETE_POWDER,1,-,-,-,-,-,-,-,-,0,1,1
 -,BLUE_CONCRETE_POWDER,GRAVEL,4,SAND,4,LAPIS_LAZULI,1,-,-,-,-,1,8,1
